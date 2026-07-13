@@ -1,5 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <CoreAudio/CoreAudio.h>
+#import <pthread.h>
 #import <Core/gb.h>
 #import "GBAudioClient.h"
 #import "Document.h"
@@ -15,6 +16,7 @@
 #import "GBObjectView.h"
 #import "GBPaletteView.h"
 #import "GBHexStatusBarRepresenter.h"
+#import "GBDebuggerWindowController.h"
 #import "NSObject+DefaultsObserver.h"
 #import <pthread/sched.h>
 
@@ -72,7 +74,7 @@
     bool _dirtyBattery;
     
     bool _fullScreen;
-    bool _inSyncInput;
+    volatile bool _inSyncInput;
     NSString *_debuggerCommandWhilePaused;
     HFController *_hexController;
     
@@ -119,11 +121,13 @@
     bool _isRecordingAudio;
     
     void (^ volatile _pendingAtomicBlock)();
+    pthread_mutex_t _pendingAtomicBlockLock;
     
     NSDate *_fileModificationTime;
     __weak NSThread *_emulationThread;
     
     GBCheatSearchController *_cheatSearchController;
+    GBDebuggerWindowController *_debuggerWindowController;
     
     bool _romModified;
 }
@@ -246,6 +250,7 @@ static void debuggerReloadCallback(GB_gameboy_t *gb)
 {
     self = [super init];
     if (self) {
+        pthread_mutex_init(&_pendingAtomicBlockLock, NULL);
         _hasDebuggerInput = [[NSConditionLock alloc] initWithCondition:0];
         _debuggerInputQueue = [[NSMutableArray alloc] init];
         _consoleOutputLock = [[NSRecursiveLock alloc] init];
@@ -554,8 +559,7 @@ static unsigned *multiplication_table_for_frequency(unsigned frequency)
                 _linkOffset -= masterTable[GB_run(&_slave->_gb)];
             }
             if (unlikely(_pendingAtomicBlock)) {
-                _pendingAtomicBlock();
-                _pendingAtomicBlock = nil;
+                [self drainPendingAtomicBlock];
             }
         }
         free(masterTable);
@@ -575,8 +579,7 @@ static unsigned *multiplication_table_for_frequency(unsigned frequency)
                 GB_run(&_gb);
             }
             if (unlikely(_pendingAtomicBlock)) {
-                _pendingAtomicBlock();
-                _pendingAtomicBlock = nil;
+                [self drainPendingAtomicBlock];
             }
         }
     }
@@ -1391,6 +1394,8 @@ static bool is_path_writeable(const char *path)
     _cheatsWindow = nil;
     [_cheatSearchController.window close];
     _cheatSearchController.window = nil;
+    [_debuggerWindowController teardown];
+    _debuggerWindowController = nil;
     [super close];
 }
 
@@ -1425,6 +1430,15 @@ static bool is_path_writeable(const char *path)
         return !self.partner->_running || GB_debugger_is_stopped(&_gb) || GB_debugger_is_stopped(&self.partner->_gb);
     }
     return (!_running) || GB_debugger_is_stopped(&_gb);
+}
+
+/* True only once the emulation thread has actually reached getDebuggerInput.
+   GB_debugger_is_stopped turns true earlier, while the emulation thread is
+   still on its way to the input point — main-thread core access is unsafe in
+   that window. */
+- (bool)isDebuggerParked
+{
+    return _inSyncInput;
 }
 
 - (BOOL)validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)anItem
@@ -1697,6 +1711,14 @@ enum GBWindowResizeAction
     _cpuCounter.stringValue = [NSString stringWithFormat:@"%.2f%%", secondUsage * 100];
 }
 
+- (IBAction)showDebugger:(id)sender
+{
+    if (!_debuggerWindowController) {
+        _debuggerWindowController = [GBDebuggerWindowController controllerWithDocument:self];
+    }
+    [_debuggerWindowController present];
+}
+
 - (void)queueDebuggerCommand:(NSString *)command
 {
     if (!_master && !_running && !GB_debugger_is_stopped(&_gb)) {
@@ -1775,6 +1797,8 @@ enum GBWindowResizeAction
     [self appendPendingOutput];
     _logToSideView = false;
     [_consoleOutputLock unlock];
+
+    [_debuggerWindowController debuggerDidRefresh];
 }
 
 - (char *)getDebuggerInput
@@ -1895,6 +1919,20 @@ enum GBWindowResizeAction
     [self log:log withAttributes:0];
 }
 
+/* Runs and clears the pending atomic block, if any. The mutex makes the
+   run-and-clear atomic, so the emulation thread (draining between GB_run
+   calls) and a waiting thread that claims the block after the debugger
+   stopped never run the same block twice or concurrently. */
+- (void)drainPendingAtomicBlock
+{
+    pthread_mutex_lock(&_pendingAtomicBlockLock);
+    if (_pendingAtomicBlock) {
+        _pendingAtomicBlock();
+        _pendingAtomicBlock = nil;
+    }
+    pthread_mutex_unlock(&_pendingAtomicBlockLock);
+}
+
 - (void)performAtomicBlock: (void (^)())block
 {
     while (!GB_is_inited(&_gb)) sched_yield();
@@ -1912,13 +1950,33 @@ enum GBWindowResizeAction
         return;
     }
     
+    /* Re-entrancy: a pending block already running at a safe point on the
+       emulation thread may itself need core access and land back here (e.g.
+       the debugger window's live refresh captures disassembly output from
+       inside its own atomic block). Run it in place — queueing it would
+       deadlock, as the emulation thread cannot drain while it is here. */
     if ([NSThread currentThread] == _emulationThread) {
         block();
         return;
     }
     
+    /* The lock keeps this store from racing the run-and-clear in
+       drainPendingAtomicBlock on the emulation thread, which could
+       otherwise clear a block that never ran. */
+    pthread_mutex_lock(&_pendingAtomicBlockLock);
     _pendingAtomicBlock = block;
-    while (_pendingAtomicBlock) sched_yield();
+    pthread_mutex_unlock(&_pendingAtomicBlockLock);
+    while (_pendingAtomicBlock) {
+        if (GB_debugger_is_stopped(&_gb) && _inSyncInput) {
+            /* A breakpoint hit after the isRunning check above: the emulation
+               thread is parked in getDebuggerInput and only drains pending
+               blocks between GB_run calls, so it will never pick this one up.
+               getDebuggerInput dispatch_syncs to the main thread after setting
+               _inSyncInput, and this may be the very thread spinning here. */
+            [self drainPendingAtomicBlock];
+        }
+        sched_yield();
+    }
 }
 
 - (NSString *)captureOutputForBlock: (void (^)())block
@@ -2988,6 +3046,7 @@ enum GBWindowResizeAction
     if (updateContinue) {
         [self.debuggerContinueButton mouseEntered:nil];
     }
+    [_debuggerWindowController updateRunningState];
 }
 
 - (IBAction)debuggerButtonPressed:(NSButton *)sender

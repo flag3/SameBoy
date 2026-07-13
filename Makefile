@@ -405,12 +405,18 @@ else
 SDL_TARGET := $(BIN)/SDL/sameboy
 TESTER_TARGET := $(BIN)/tester/sameboy_tester
 endif
+SM83_ASSEMBLER_TEST_TARGET := $(BIN)/tests/sm83_assembler_test
+DEBUGGER_SUPPORT_TEST_TARGET := $(BIN)/tests/debugger_support_test
 
 cocoa: $(BIN)/SameBoy.app
 xdg-thumbnailer: $(BIN)/XdgThumbnailer/sameboy-thumbnailer
 sdl: $(SDL_TARGET) $(BIN)/SDL/dmg_boot.bin $(BIN)/SDL/mgb_boot.bin $(BIN)/SDL/cgb0_boot.bin $(BIN)/SDL/cgb_boot.bin $(BIN)/SDL/agb_boot.bin $(BIN)/SDL/sgb_boot.bin $(BIN)/SDL/sgb2_boot.bin $(BIN)/SDL/LICENSE $(BIN)/SDL/registers.sym $(BIN)/SDL/background.bmp $(BIN)/SDL/Shaders $(BIN)/SDL/Palettes
 bootroms: $(BIN)/BootROMs/agb_boot.bin $(BIN)/BootROMs/cgb_boot.bin $(BIN)/BootROMs/cgb0_boot.bin $(BIN)/BootROMs/dmg_boot.bin $(BIN)/BootROMs/mgb_boot.bin $(BIN)/BootROMs/sgb_boot.bin $(BIN)/BootROMs/sgb2_boot.bin
 tester: $(TESTER_TARGET) $(BIN)/tester/dmg_boot.bin $(BIN)/tester/cgb_boot.bin $(BIN)/tester/agb_boot.bin $(BIN)/tester/sgb_boot.bin $(BIN)/tester/sgb2_boot.bin
+sm83-assembler-test: $(SM83_ASSEMBLER_TEST_TARGET)
+	$(SM83_ASSEMBLER_TEST_TARGET)
+debugger-support-test: $(DEBUGGER_SUPPORT_TEST_TARGET)
+	$(DEBUGGER_SUPPORT_TEST_TARGET)
 _ios: $(BIN)/SameBoy-iOS.app $(OBJ)/installer
 ios-ipa: $(BIN)/SameBoy-iOS.ipa
 ios-deb: $(BIN)/SameBoy-iOS.deb
@@ -737,6 +743,12 @@ $(BIN)/tester/%.bin: $(BOOTROMS_DIR)/%.bin
 	-@$(MKDIR) -p $(dir $@)
 	cp -f $< $@
 
+$(SM83_ASSEMBLER_TEST_TARGET): Cocoa/GBSM83Assembler.m Cocoa/GBSM83Assembler.h Tests/sm83_assembler_test.m Tests/test_common.h
+$(DEBUGGER_SUPPORT_TEST_TARGET): Cocoa/GBDebuggerSupport.m Cocoa/GBDebuggerSupport.h Tests/debugger_support_test.m Tests/test_common.h
+$(BIN)/tests/%:
+	-@$(MKDIR) -p $(dir $@)
+	$(CC) $(CFLAGS) $(FRONTEND_CFLAGS) $(FAT_FLAGS) $(OCFLAGS) $(filter %.m,$^) -framework Foundation -o $@
+
 $(BIN)/SameBoy.app/Contents/Resources/%.bin: $(BOOTROMS_DIR)/%.bin
 	-@$(MKDIR) -p $(dir $@)
 	cp -f $< $@
@@ -939,4 +951,4 @@ $(OBJ)/Windows/msvcrt.lib: Windows/msvcrt.def
 clean:
 	rm -rf build
 
-.PHONY: libretro tester cocoa ios _ios ios-ipa ios-deb liblib-unsupported bootroms
+.PHONY: libretro tester sm83-assembler-test debugger-support-test cocoa ios _ios ios-ipa ios-deb liblib-unsupported bootroms
