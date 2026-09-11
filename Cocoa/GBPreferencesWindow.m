@@ -34,7 +34,7 @@
 
 static inline NSString *keyEquivalentString(NSMenuItem *item)
 {
-    return [NSString stringWithFormat:@"%s%@", (item.keyEquivalentModifierMask & NSEventModifierFlagShift)? "^":"", item.keyEquivalent];
+    return [NSString stringWithFormat:@"%s%@", (item.keyEquivalentModifierMask & NSEventModifierFlagControl)? "^":"", item.keyEquivalent];
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView

@@ -736,8 +736,8 @@ static uint32_t color_to_int(NSColor *color)
         NSString *keyEquivalent = [[NSUserDefaults standardUserDefaults] stringForKey:usage == GBJoyKitHotkey1? @"GBJoypadHotkey1" : @"GBJoypadHotkey2"];
         NSEventModifierFlags flags = NSEventModifierFlagCommand;
         if ([keyEquivalent hasPrefix:@"^"]) {
-            flags |= NSEventModifierFlagShift;
-            [keyEquivalent substringFromIndex:1];
+            flags |= NSEventModifierFlagControl;
+            keyEquivalent = [keyEquivalent substringFromIndex:1];
         }
         _simulatingMenuEvent = true;
         [[NSApplication sharedApplication] sendEvent:[NSEvent keyEventWithType:NSEventTypeKeyDown

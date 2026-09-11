@@ -920,34 +920,34 @@
                                 <menuItem title="Save State to Slot 10" keyEquivalent="0" id="XIh-A2-QAg"/>
                                 <menuItem isSeparatorItem="YES" id="Nfr-cm-L2W"/>
                                 <menuItem title="Load State from Slot 1" keyEquivalent="1" id="bEy-D8-ckq">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 2" keyEquivalent="2" id="46a-Gt-mIa">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 3" keyEquivalent="3" id="9tn-pS-BDn">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 4" keyEquivalent="4" id="xsE-oe-cTS">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 5" keyEquivalent="5" id="lso-J8-dJO">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 6" keyEquivalent="6" id="nO5-pj-ba2">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 7" keyEquivalent="7" id="BhF-xL-MhS">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 8" keyEquivalent="8" id="2Qv-vX-7Qm">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 9" keyEquivalent="9" id="CBy-h9-gm8">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 10" keyEquivalent="0" id="UuH-sh-D9c">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                             </items>
                         </menu>
@@ -991,34 +991,34 @@
                                 <menuItem title="Save State to Slot 10" keyEquivalent="0" id="5eE-XE-E76"/>
                                 <menuItem isSeparatorItem="YES" id="Q57-67-3h1"/>
                                 <menuItem title="Load State from Slot 1" keyEquivalent="1" id="fdH-LH-gl1">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 2" keyEquivalent="2" id="77e-oa-0qg">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 3" keyEquivalent="3" id="LKg-oc-egx">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 4" keyEquivalent="4" id="CAi-yh-rg4">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 5" keyEquivalent="5" id="smK-o2-ZI6">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 6" keyEquivalent="6" id="SoT-kd-9M1">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 7" keyEquivalent="7" id="BCT-R6-O4Y">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 8" keyEquivalent="8" id="U64-kB-gnC">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 9" keyEquivalent="9" id="sDw-Wr-Od1">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                                 <menuItem title="Load State from Slot 10" keyEquivalent="0" id="XZl-tl-CcJ">
-                                    <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 </menuItem>
                             </items>
                         </menu>
