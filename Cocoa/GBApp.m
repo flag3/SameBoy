@@ -757,7 +757,7 @@ static bool PerformMenuItemWithKeyEquivalent(NSMenu *menu, NSString *keyEquivale
         NSString *keyEquivalent = [[NSUserDefaults standardUserDefaults] stringForKey:usage == GBJoyKitHotkey1? @"GBJoypadHotkey1" : @"GBJoypadHotkey2"];
         NSEventModifierFlags flags = NSEventModifierFlagCommand;
         if ([keyEquivalent hasPrefix:@"^"]) {
-            flags |= NSEventModifierFlagShift;
+            flags |= NSEventModifierFlagControl;
             keyEquivalent = [keyEquivalent substringFromIndex:1];
         }
         PerformMenuItemWithKeyEquivalent(self.mainMenu, keyEquivalent, flags);
