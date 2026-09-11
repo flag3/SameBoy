@@ -341,61 +341,61 @@
                                 <menu key="submenu" title="Load State" id="l9D-Ej-sh2">
                                     <items>
                                         <menuItem title="Slot 1" tag="1" keyEquivalent="1" id="aEJ-6V-7sk">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="rOy-Ve-UUM"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 2" tag="2" keyEquivalent="2" id="EWM-vK-sZm">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="M7f-wx-xt2"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 3" tag="3" keyEquivalent="3" id="YEd-gG-G6p">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="ALD-3X-pJ6"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 4" tag="4" keyEquivalent="4" id="Xgn-pa-LcM">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="I0n-4q-CmW"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 5" tag="5" keyEquivalent="5" id="XIA-qE-emo">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="SAP-0t-CGM"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 6" tag="6" keyEquivalent="6" id="0CQ-w6-dSd">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="CFz-7P-jTJ"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 7" tag="7" keyEquivalent="7" id="sdG-Dc-QNU">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="B49-vL-qN7"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 8" tag="8" keyEquivalent="8" id="pPH-D9-4MJ">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="TZl-ug-0ae"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 9" tag="9" keyEquivalent="9" id="1Uy-yl-ITg">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="Hk5-Pz-VC5"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Slot 10" tag="10" keyEquivalent="0" id="dpk-UF-vN2">
-                                            <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
+                                            <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="loadState:" target="-1" id="GEt-4l-90e"/>
                                             </connections>
