@@ -404,12 +404,15 @@ else
 SDL_TARGET := $(BIN)/SDL/sameboy
 TESTER_TARGET := $(BIN)/tester/sameboy_tester
 endif
+COCOA_TEST_TARGETS := $(BIN)/tests/sm83_assembler_test $(BIN)/tests/debugger_support_test $(BIN)/tests/debugger_integration_test
 
 cocoa: $(BIN)/SameBoy.app
 xdg-thumbnailer: $(BIN)/XdgThumbnailer/sameboy-thumbnailer
 sdl: $(SDL_TARGET) $(BIN)/SDL/dmg_boot.bin $(BIN)/SDL/mgb_boot.bin $(BIN)/SDL/cgb0_boot.bin $(BIN)/SDL/cgb_boot.bin $(BIN)/SDL/agb_boot.bin $(BIN)/SDL/sgb_boot.bin $(BIN)/SDL/sgb2_boot.bin $(BIN)/SDL/LICENSE $(BIN)/SDL/registers.sym $(BIN)/SDL/background.bmp $(BIN)/SDL/Shaders $(BIN)/SDL/Palettes
 bootroms: $(BIN)/BootROMs/agb_boot.bin $(BIN)/BootROMs/cgb_boot.bin $(BIN)/BootROMs/cgb0_boot.bin $(BIN)/BootROMs/dmg_boot.bin $(BIN)/BootROMs/mgb_boot.bin $(BIN)/BootROMs/sgb_boot.bin $(BIN)/BootROMs/sgb2_boot.bin
 tester: $(TESTER_TARGET) $(BIN)/tester/dmg_boot.bin $(BIN)/tester/cgb_boot.bin $(BIN)/tester/agb_boot.bin $(BIN)/tester/sgb_boot.bin $(BIN)/tester/sgb2_boot.bin
+cocoa-tests: $(COCOA_TEST_TARGETS)
+	$(foreach test,$^,$(test) &&) true
 _ios: $(BIN)/SameBoy-iOS.app $(OBJ)/installer
 ios-ipa: $(BIN)/SameBoy-iOS.ipa
 ios-deb: $(BIN)/SameBoy-iOS.deb
@@ -443,6 +446,7 @@ endif
 
 CORE_OBJECTS := $(patsubst %,$(OBJ)/%.o,$(CORE_SOURCES))
 PUBLIC_HEADERS := $(patsubst Core/%,$(INC)/%,$(CORE_HEADERS))
+COCOA_FRAMEWORKS := -framework OpenGL -framework AudioUnit -framework AVFoundation -framework CoreVideo -framework CoreMedia -framework IOKit -framework PreferencePanes -framework Carbon -framework QuartzCore -framework Security -framework WebKit -weak_framework Metal -weak_framework MetalKit -weak_framework QuickLookThumbnailing -weak_framework QuickLookUI -framework Quicklook -framework AppKit
 COCOA_OBJECTS := $(patsubst %,$(OBJ)/%.o,$(COCOA_SOURCES))
 IOS_OBJECTS := $(patsubst %,$(OBJ)/%.o,$(IOS_SOURCES))
 QUICKLOOK_OBJECTS := $(patsubst %,$(OBJ)/%.o,$(QUICKLOOK_SOURCES))
@@ -463,8 +467,11 @@ endif
 ifneq ($(filter $(MAKECMDGOALS),tester),)
 -include $(TESTER_OBJECTS:.o=.dep)
 endif
-ifneq ($(filter $(MAKECMDGOALS),cocoa),)
+ifneq ($(filter $(MAKECMDGOALS),cocoa cocoa-tests),)
 -include $(COCOA_OBJECTS:.o=.dep)
+endif
+ifneq ($(filter $(MAKECMDGOALS),cocoa-tests),)
+-include $(OBJ)/Tests/debugger_integration_test.m.dep
 endif
 ifneq ($(filter $(MAKECMDGOALS),_ios),)
 -include $(IOS_OBJECTS:.o=.dep)
@@ -602,7 +609,7 @@ $(BIN)/SameBoy.app/Contents/MacOS/SameBoy: $(BIN)/SameBoy.app/Contents/Library/Q
 	
 $(BIN)/SameBoy.app/Contents/Library/QuickLook/SameBoy.qlgenerator/Contents/MacOS/SameBoy.dylib: $(COCOA_OBJECTS) $(CORE_OBJECTS) $(QUICKLOOK_OBJECTS)
 	-@$(MKDIR) -p $(dir $@)
-	$(CC) $^ -o $@ $(LDFLAGS) $(FAT_FLAGS) -shared -install_name @rpath/Contents/MacOS/SameBoy.dylib -framework OpenGL -framework AudioUnit -framework AVFoundation -framework CoreVideo -framework CoreMedia -framework IOKit -framework PreferencePanes -framework Carbon -framework QuartzCore -framework Security -framework WebKit -weak_framework Metal -weak_framework MetalKit -weak_framework QuickLookThumbnailing -weak_framework QuickLookUI -framework Quicklook -framework AppKit -Wl,-exported_symbols_list,QuickLook/exports.sym -Wl,-exported_symbol,_main
+	$(CC) $^ -o $@ $(LDFLAGS) $(FAT_FLAGS) -shared -install_name @rpath/Contents/MacOS/SameBoy.dylib $(COCOA_FRAMEWORKS) -Wl,-exported_symbols_list,QuickLook/exports.sym -Wl,-exported_symbol,_main
 ifeq ($(CONF), release)
 	$(STRIP) $@
 	$(CODESIGN) $@
@@ -735,6 +742,16 @@ $(BIN)/tester/sameboy_tester.exe: $(CORE_OBJECTS)
 $(BIN)/tester/%.bin: $(BOOTROMS_DIR)/%.bin
 	-@$(MKDIR) -p $(dir $@)
 	cp -f $< $@
+
+$(BIN)/tests/debugger_integration_test: $(filter-out $(OBJ)/Cocoa/main.m.o,$(COCOA_OBJECTS)) $(CORE_OBJECTS) $(OBJ)/Tests/debugger_integration_test.m.o
+	-@$(MKDIR) -p $(dir $@)
+	$(CC) $^ -o $@ $(LDFLAGS) $(FAT_FLAGS) $(COCOA_FRAMEWORKS)
+
+$(BIN)/tests/sm83_assembler_test: Cocoa/GBSM83Assembler.m Cocoa/GBSM83Assembler.h Tests/sm83_assembler_test.m Tests/test_common.h
+$(BIN)/tests/debugger_support_test: Cocoa/GBDebuggerSupport.m Cocoa/GBDebuggerSupport.h Tests/debugger_support_test.m Tests/test_common.h
+$(BIN)/tests/%:
+	-@$(MKDIR) -p $(dir $@)
+	$(CC) $(CFLAGS) $(FRONTEND_CFLAGS) $(FAT_FLAGS) $(OCFLAGS) $(filter %.m,$^) -framework Foundation -o $@
 
 $(BIN)/SameBoy.app/Contents/Resources/%.bin: $(BOOTROMS_DIR)/%.bin
 	-@$(MKDIR) -p $(dir $@)
@@ -938,4 +955,4 @@ $(OBJ)/Windows/msvcrt.lib: Windows/msvcrt.def
 clean:
 	rm -rf build
 
-.PHONY: libretro tester cocoa ios _ios ios-ipa ios-deb liblib-unsupported bootroms
+.PHONY: libretro tester cocoa-tests cocoa ios _ios ios-ipa ios-deb liblib-unsupported bootroms

@@ -62,7 +62,7 @@ struct GB_watchpoint_s {
 
 #define WP_KEY(x) (((struct GB_watchpoint_s){.addr = ((x).value), .bank = (x).has_bank? (x).bank : -1 }).key)
 
-static uint16_t bank_for_addr(GB_gameboy_t *gb, uint16_t addr)
+uint16_t GB_debugger_bank_for_address(GB_gameboy_t *gb, uint16_t addr)
 {
     if (addr < 0x4000) {
         return gb->mbc_rom0_bank;
@@ -650,7 +650,7 @@ static value_t debugger_evaluate(GB_gameboy_t *gb, const char *string,
                 case 'd': if (string[1] == 'e') {ret = VALUE_16(gb->de); goto exit;}
                 case 'h': if (string[1] == 'l') {ret = VALUE_16(gb->hl); goto exit;}
                 case 's': if (string[1] == 'p') {ret = VALUE_16(gb->sp); goto exit;}
-                case 'p': if (string[1] == 'c') {ret = (value_t){true, bank_for_addr(gb, gb->pc), gb->pc};  goto exit;}
+                case 'p': if (string[1] == 'c') {ret = (value_t){true, GB_debugger_bank_for_address(gb, gb->pc), gb->pc};  goto exit;}
             }
         }
         else if (length == 3 && conf) {
@@ -1421,7 +1421,7 @@ static bool list(GB_gameboy_t *gb, char *arguments, char *modifiers, const debug
 static unsigned should_break(GB_gameboy_t *gb, uint16_t addr, bool jump_to)
 {
     if (unlikely(gb->backstep_instructions)) return false;
-    uint16_t bank = bank_for_addr(gb, addr);
+    uint16_t bank = GB_debugger_bank_for_address(gb, addr);
     for (unsigned i = 0; i < gb->n_breakpoints; i++) {
         struct GB_breakpoint_s *breakpoint = &gb->breakpoints[i];
         if (breakpoint->bank != (uint16_t)-1) {
@@ -1722,7 +1722,7 @@ static bool backtrace(GB_gameboy_t *gb, char *arguments, char *modifiers, const 
         return true;
     }
 
-    GB_log(gb, "  1. %s\n", debugger_value_to_string(gb, (value_t){true, bank_for_addr(gb, gb->pc), gb->pc}, true, false));
+    GB_log(gb, "  1. %s\n", debugger_value_to_string(gb, (value_t){true, GB_debugger_bank_for_address(gb, gb->pc), gb->pc}, true, false));
     for (unsigned i = gb->backtrace_size; i--;) {
         GB_log(gb, "%3d. %s\n", gb->backtrace_size - i + 1, debugger_value_to_string(gb, (value_t){true, gb->backtrace_returns[i].bank, gb->backtrace_returns[i].addr}, true, false));
     }
@@ -2374,7 +2374,7 @@ void GB_debugger_call_hook(GB_gameboy_t *gb, uint16_t call_addr)
         }
 
         gb->backtrace_sps[gb->backtrace_size] = gb->sp;
-        gb->backtrace_returns[gb->backtrace_size].bank = bank_for_addr(gb, call_addr);
+        gb->backtrace_returns[gb->backtrace_size].bank = GB_debugger_bank_for_address(gb, call_addr);
         gb->backtrace_returns[gb->backtrace_size].addr = call_addr;
         gb->backtrace_size++;
         gb->debug_call_depth++;
@@ -2401,7 +2401,7 @@ void GB_debugger_ret_hook(GB_gameboy_t *gb)
 static void test_watchpoint(GB_gameboy_t *gb, uint16_t addr, uint8_t flags, uint8_t value)
 {
     if (unlikely(gb->backstep_instructions)) return;
-    uint16_t bank = bank_for_addr(gb, addr);
+    uint16_t bank = GB_debugger_bank_for_address(gb, addr);
     for (unsigned i = 0; i < gb->n_watchpoints; i++) {
         struct GB_watchpoint_s *watchpoint = &gb->watchpoints[i];
         if (watchpoint->bank != (uint16_t)-1) {
@@ -2783,7 +2783,7 @@ void GB_debugger_clear_symbols(GB_gameboy_t *gb)
 
 const GB_bank_symbol_t *GB_debugger_find_symbol(GB_gameboy_t *gb, uint16_t addr, bool prefer_local)
 {
-    uint16_t bank = bank_for_addr(gb, addr);
+    uint16_t bank = GB_debugger_bank_for_address(gb, addr);
 
     const GB_bank_symbol_t *symbol = GB_map_find_symbol(get_symbol_map(gb, bank), addr, prefer_local);
     if (symbol) return symbol;
@@ -2802,7 +2802,7 @@ const char *GB_debugger_describe_address(GB_gameboy_t *gb,
                                          bool exact_match, bool prefer_local)
 {
     if (bank == (uint16_t)-1) {
-        bank = bank_for_addr(gb, addr);
+        bank = GB_debugger_bank_for_address(gb, addr);
     }
     if ((addr >> 12) == 0xC) {
         bank = 0;
