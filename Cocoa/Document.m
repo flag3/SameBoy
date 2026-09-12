@@ -291,6 +291,7 @@ static void debuggerReloadCallback(GB_gameboy_t *gb)
 - (void)initCommon
 {
     GB_init(&_gb, [self internalModel]);
+    GB_set_emulate_joypad_bouncing(&_gb, false);
     GB_set_user_data(&_gb, (__bridge void *)(self));
     GB_set_boot_rom_load_callback(&_gb, (GB_boot_rom_load_callback_t)boot_rom_load);
     GB_set_vblank_callback(&_gb, (GB_vblank_callback_t) vblank);
