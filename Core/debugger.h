@@ -7,6 +7,8 @@
 
 typedef void (*GB_debugger_reload_callback_t)(GB_gameboy_t *gb);
 
+/* Returns the bank used by breakpoint matching, before ROM-size masking. */
+uint16_t GB_debugger_bank_for_address(GB_gameboy_t *gb, uint16_t addr);
 void GB_debugger_break(GB_gameboy_t *gb);
 #ifdef GB_INTERNAL
 bool /* Returns true if debugger waits for more commands. Not relevant for non-GB_INTERNAL */

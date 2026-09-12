@@ -96,5 +96,11 @@ enum model {
 - (NSString *)captureOutputForBlock: (void (^)())block;
 - (NSFont *)debuggerFontOfSize:(unsigned)size;
 - (void)setROMModified;
+- (void)queueDebuggerCommand:(NSString *)command;
+- (void)start;
+- (void)stop;
+@property (readonly) bool isPaused;
+@property (readonly) bool isDebuggerParked;
+@property (readonly) bool hasPendingDebuggerInput;
 @end
 
